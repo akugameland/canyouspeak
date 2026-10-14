@@ -1,0 +1,20 @@
+# Kisisel / yerel dosyalar: asla yuklenmez
+ayarlar.json
+*.log
+hata.log
+
+# Python ortami ve onbellek
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Modeller (~3 GB, baskalarinin lisansli dosyalari; modelleri_indir.py indirir)
+modeller/
+
+# Olasi gizli bilgi dosyalari
+.env
+*.env
+*.key
+*.pem
+api_keys*.json

@@ -1,0 +1,82 @@
+CANYOUSPEAK (yerel, internetsiz, ücretsiz altyazı çevirmen)
+=====================================================
+
+Ne yapar?
+- Hiç ses çıkarmaz, kimsenin yerine konuşmaz. Sadece ekranda gösterir.
+- Karşı taraf hangi dilde konuşursa konuşsun, söylediğinin Türkçesi ekranın en altında
+  film altyazısı gibi BEYAZ yazıyla çıkar. Birkaç saniye sonra kaybolur.
+- Siz F8'i basılı tutup Türkçe konuşursunuz. Söylemeniz gereken cümle karşı tarafın dilinde
+  SARI yazıyla çıkar. Siz tekrar F8'e basana kadar ekranda kalır, rahatça okuyabilirsiniz.
+  Üstündeki küçük gri "Duyulan:" satırı, uygulamanın sizi nasıl anladığını gösterir.
+  Yanlış anladıysa F8 ile tekrar söyleyin. F8'e kısaca dokunmak sarı yazıyı siler.
+- Altyazı her zaman en öndedir, fare tıklamalarını geçirir, oyunun odağını almaz.
+- Konuşulan dil, altyazının üstünde küçük harflerle yazar (ör. "İTALYANCA"). Sizin satırınızın
+  üstünde de hangi dile çevrildiği yazar (ör. "→ İNGİLİZCE").
+- Uzun konuşmada yazı ekrana sığsın diye kademeli küçülür. Okurken yazı zıplamasın diye:
+  satırlar alttan yukarı uzar, aynı konuşma sürerken yazı sadece küçülür, geri büyümez;
+  yeni konuşma yine normal boyutla başlar.
+
+ALTYAZI GÖRÜNÜMÜ
+----------------
+Ana penceredeki "Altyazı ayarları…" düğmesi. Değişiklikler anında görünür, pencere açıkken
+altyazıda örnek metin çıkar:
+- Yazı tipi, boyut, kalın
+- Yazı görünürlüğü (saydamlık)
+- Renkler: karşı tarafın çevirisi, sizin söyleyeceğiniz, "Duyulan" satırı, dil etiketi, çerçeve
+- Çerçeve kalınlığı
+- Arka plan kutusu (film altyazısı gibi): aç/kapat, renk, görünürlük (saydamlık)
+- Alttan uzaklık, genişlik, karşı tarafın yazısının ekranda kalma süresi
+- Dil etiketini göster/gizle
+"Varsayılana dön" her şeyi ilk haline getirir.
+
+Nasıl çalışır?
+- Her şey bilgisayarınızda çalışır: internet, hesap, API anahtarı, kota ya da ücret YOK.
+- Konuşmayı yazıya çeviren: OpenAI Whisper large-v3-turbo (ekran kartında).
+- Çeviren: Meta NLLB-200 1.3B (işlemcide; ekran kartı oyuna kalsın diye). 200 dil.
+- Modeller program klasöründeki modeller\ klasöründe (~3 GB). Silmeyin.
+- Konuşma sürerken yaklaşık 1,5 saniyede bir ara çeviri gösterilir; cümle bitince son hali
+  yaklaşık 1,5 saniye içinde yazılır.
+- Lisans notu: NLLB-200 yalnızca ticari olmayan kullanım içindir (kişisel kullanım uygundur).
+
+KULLANIM
+--------
+- İlk kez kuruyorsanız önce KURULUM.bat'ı çalıştırın (Python 3.12 gerekir). Sonra BASLAT.bat ile açın. İlk açılışta modellerin yüklenmesi 10-30 saniye sürer
+  ("Modeller yükleniyor…" yazar).
+- "Karşı taraf: Dinliyor" yazıyorsa hazırdır. Yeşil çubuk duyulan sesin seviyesidir.
+  Sarı çizginin altındaki sesler (uğultu, sessizlik) konuşma sayılmaz.
+- "Sizin konuşmanız şu dile": "Otomatik" seçiliyse karşı tarafın konuştuğu dil kullanılır.
+  Henüz kimse konuşmadıysa İngilizce kullanılır.
+- "Dinlenen kulaklık / hoparlör": Discord'un sesi hangi kulaklıktan geliyorsa onu seçin.
+  "Varsayılan" seçiliyse Windows'un varsayılanı dinlenir; kulaklık takınca kendiliğinden geçer.
+- "Mikrofon": F8 ile konuşurken kullanılacak mikrofon.
+- Yeni bir kulaklık/mikrofon taktıysanız ve listede yoksa "↻ Yenile"ye basın.
+- "Ses eşiği": karşı taraf çevrilmiyorsa düşürün (daha hassas); oyun sesleri sürekli
+  dinleniyorsa yükseltin. Sarı çizgi eşiği, yeşil çubuk o anki sesi gösterir.
+- Kısa sözler (merhaba, evet, tamam, teşekkürler, bekle, geliyorum, gg…) 17 dilde hazır
+  sözlükten çevrilir; çeviri modeli bunlarda saçmaladığı için.
+
+OYUNDA KULLANIM
+---------------
+- Oyunu "Kenarlıksız pencere" (Borderless / Windowed Fullscreen) modunda açın.
+  "Tam ekran" (Exclusive Fullscreen) modunda altyazı oyunun üstüne çıkamaz.
+- Oyun "yönetici olarak" çalışıyorsa F8 algılanmayabilir: BASLAT.bat'a sağ tıklayıp
+  "Yönetici olarak çalıştır" deyin.
+- Ağır bir oyunda takılma olursa ayarlar.json içinde "cihaz": "cpu" yapın: konuşma tanıma
+  ekran kartını hiç kullanmaz (daha yavaş ve daha az isabetli 'small' model; ilk seferde ~480 MB iner).
+
+BİLİNEN SINIRLAR
+----------------
+- Uygulama hoparlörden çıkan her sesi dinler. Video/müzikteki konuşmalar da çevrilir.
+- Çeviri kalitesi Google/Gemini kadar iyi değildir; argo ve oyun terimlerinde yanılabilir.
+- Ses tanıma bazen yanılır. Gri "Duyulan" satırına bakın.
+- Tek başına söylenen çok kısa yabancı sözlerde ("Hallo", "Ja ja") dil karışabilir.
+
+SORUN ÇÖZME
+-----------
+- Karşı taraf hiç çevrilmiyor: yeşil çubuk oynuyor mu? Oynamıyorsa "Dinlenen kulaklık"
+  yanlış; Discord'un çıkış aygıtını seçin. Oynuyor ama sarı çizgiye ulaşmıyorsa eşiği düşürün.
+- F8 oyunda çalışmıyor: BASLAT.bat'ı yönetici olarak çalıştırın ya da başka tuş seçin.
+- Altyazı görünmüyor: oyun kenarlıksız pencere modunda mı? "Altyazı göster" işaretli mi?
+- Uygulama zaten açık diyor: görev çubuğundaki pencereyi kullanın (iki kopya çalışmaz).
+
+Hata olursa: aynı klasördeki hata.log dosyası.
