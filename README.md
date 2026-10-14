@@ -16,15 +16,21 @@ Discord'da (ve oyunlarda) yabancılarla konuşurken **canlı altyazı çevirmeni
 
 ## Gereksinimler
 
-- Windows 10/11, Python 3.12
+- Windows 10/11, Python 3.12 (test edilen sürüm: [Python 3.12.10](https://www.python.org/downloads/release/python-31210/))
 - Önerilen: NVIDIA ekran kartı (4 GB yeter). Yoksa işlemcide daha yavaş çalışır.
 - Disk: ~3 GB model + ~2 GB Python paketleri
 
 ## Kurulum
 
 1. Depoyu indirin.
-2. `KURULUM.bat` dosyasını çalıştırın. Python ortamını kurar ve modelleri indirir.
+2. `KURULUM.bat` dosyasını çalıştırın. Python ortamını kurar ve modelleri indirir. Bilgisayarda Python 3.12 yoksa onu da kendisi kurar (winget ile, yönetici izni gerekmez).
 3. `BASLAT.bat` ile açın.
+
+Python otomatik kurulamazsa elle kurun:
+
+1. [Python 3.12.10](https://www.python.org/downloads/release/python-31210/) sayfasındaki "Files" tablosundan **Windows installer (64-bit)** dosyasını indirin. 3.12'nin daha yeni sürümlerinde (3.12.11 ve sonrası) Windows kurulum dosyası yoktur.
+2. Kurulumun ilk ekranında **"Add python.exe to PATH"** kutusunu işaretleyin.
+3. `KURULUM.bat` dosyasını yeniden çalıştırın.
 
 Ayrıntılı kullanım ve sorun çözme: [OKU_BENI.txt](OKU_BENI.txt)
 

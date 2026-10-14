@@ -1,0 +1,2 @@
+# Windows komut dosyalari CRLF ister: LF ile "goto"/"call :etiket" yanlis satira atlayabiliyor
+*.bat text eol=crlf

@@ -40,7 +40,9 @@ Nasıl çalışır?
 
 KULLANIM
 --------
-- İlk kez kuruyorsanız önce KURULUM.bat'ı çalıştırın (Python 3.12 gerekir). Sonra BASLAT.bat ile açın. İlk açılışta modellerin yüklenmesi 10-30 saniye sürer
+- İlk kez kuruyorsanız önce KURULUM.bat'ı çalıştırın. Python 3.12 yoksa onu da kendisi kurar;
+  kuramazsa ekranda elle kurulum adımlarını yazar (Python 3.12.10:
+  https://www.python.org/downloads/release/python-31210/). Sonra BASLAT.bat ile açın. İlk açılışta modellerin yüklenmesi 10-30 saniye sürer
   ("Modeller yükleniyor…" yazar).
 - "Karşı taraf: Dinliyor" yazıyorsa hazırdır. Yeşil çubuk duyulan sesin seviyesidir.
   Sarı çizginin altındaki sesler (uğultu, sessizlik) konuşma sayılmaz.
