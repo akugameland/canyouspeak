@@ -15,7 +15,10 @@ Not: Tam ekran (exclusive fullscreen) oyunlarda hicbir pencere oyunun ustune cik
 oyunu "kenarliksiz pencere" (borderless) modunda calistirin.
 """
 import ctypes
+import logging
+import os
 import tkinter as tk
+from ctypes import wintypes
 import tkinter.font as tkfont
 
 ANAHTAR_RENK = "#010203"         # yazi penceresinde saydam yapilan renk
@@ -44,10 +47,16 @@ SATIR_SINIRI = (2, 3, 3, 3)      # her adimda izin verilen satir sayisi
 EN_KUCUK_BOYUT = 12
 
 _u32 = ctypes.windll.user32
+_u32.GetWindow.restype = wintypes.HWND
+_u32.GetWindow.argtypes = (wintypes.HWND, wintypes.UINT)
 GWL_EXSTYLE = -20
 WS_EX_LAYERED, WS_EX_TRANSPARENT, WS_EX_TOOLWINDOW, WS_EX_NOACTIVATE = 0x80000, 0x20, 0x80, 0x08000000
-HWND_TOPMOST = -1
+WS_EX_TOPMOST = 0x8
+HWND_TOPMOST, HWND_NOTOPMOST = -1, -2
+GW_HWNDPREV = 3
 SWP_NOSIZE, SWP_NOMOVE, SWP_NOACTIVATE, SWP_SHOWWINDOW = 0x1, 0x2, 0x10, 0x40
+USTTE_TUT_MS = 400
+_KENDI_PID = os.getpid()
 
 
 TIKLAMA_GECIR = WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE
@@ -107,6 +116,32 @@ def _en_one(hwnd: int, goster: bool = False, altina: int | None = None):
     _u32.SetWindowPos(hwnd, altina if altina else HWND_TOPMOST, 0, 0, 0, 0, bayrak)
 
 
+def _ustumuzdeki(hwnd: int) -> int | None:
+    """Altyaziyi ortende gorunen, baska bir programa ait en-onde pencere (or. oyun) varsa onu dondurur."""
+    biz = wintypes.RECT()
+    _u32.GetWindowRect(hwnd, ctypes.byref(biz))
+    h = _u32.GetWindow(hwnd, GW_HWNDPREV)
+    for _ in range(500):                                   # z sirasi dongusune karsi sinir
+        if not h:
+            return None
+        o, pid = wintypes.RECT(), wintypes.DWORD()
+        _u32.GetWindowThreadProcessId(h, ctypes.byref(pid))
+        if (pid.value != _KENDI_PID and _u32.IsWindowVisible(h)
+                and _u32.GetWindowLongW(h, GWL_EXSTYLE) & WS_EX_TOPMOST
+                and _u32.GetWindowRect(h, ctypes.byref(o))
+                and o.left < biz.right and biz.left < o.right and o.top < biz.bottom and biz.top < o.bottom):
+            return h
+        h = _u32.GetWindow(h, GW_HWNDPREV)
+    return None
+
+
+def _pencere_adi(h: int) -> str:
+    sinif, baslik = ctypes.create_unicode_buffer(128), ctypes.create_unicode_buffer(128)
+    _u32.GetClassNameW(h, sinif, 128)
+    _u32.GetWindowTextW(h, baslik, 128)
+    return f"{sinif.value!r} {baslik.value!r}"
+
+
 class Altyazi:
     def __init__(self, kok: tk.Tk, stil: dict):
         self.kok = kok
@@ -122,6 +157,7 @@ class Altyazi:
         self.ben = self.ben_duyulan = self.ben_dil = self.ben_anahtar = ""
         self._adim: dict[str, int] = {}              # konusma anahtari -> kullanilan olcek adimi (sadece buyur)
         self._karsi_zamanlayici = None
+        self._bildirilen: set[str] = set()
         self._yerlestir()
         self._ustte_tut()
 
@@ -144,12 +180,25 @@ class Altyazi:
     def _ustte_tut(self):
         # Bazi oyunlar kendini en one alir; katmanlari duzenli olarak tekrar en one koy (odak calmadan).
         # Yazi en one, kutu yazinin hemen altina. Tiklama gecirme de her seferinde denetlenir.
-        if self.acik:
-            _tiklama_gecir(self.hwnd)
-            _tiklama_gecir(self.kutu_hwnd)
-            _en_one(self.hwnd)
-            _en_one(self.kutu_hwnd, altina=self.hwnd)
-        self.p.after(1500, self._ustte_tut)
+        # 2026-10-15 kullanici bildirdi: UBOAT (Unity, kenarliksiz pencere) altyaziyi arkada birakti.
+        # Oyun penceresi de en-onde (topmost) olunca HWND_TOPMOST yazinin yerini degistirmeyebiliyor;
+        # ustte baska bir en-onde pencere goruluyorsa once NOTOPMOST sonra TOPMOST ile kusagin en ustune alinir.
+        try:
+            if self.acik:
+                _tiklama_gecir(self.hwnd)
+                _tiklama_gecir(self.kutu_hwnd)
+                _en_one(self.hwnd)
+                ortu = _ustumuzdeki(self.hwnd)
+                if ortu:
+                    ad = _pencere_adi(ortu)
+                    if ad not in self._bildirilen:            # hangi pencerenin orttugu kayda bir kez yazilsin
+                        self._bildirilen.add(ad)
+                        logging.warning("altyazinin ustunde pencere vardi, one alindi: %s", ad)
+                    _en_one(self.hwnd, altina=HWND_NOTOPMOST)
+                    _en_one(self.hwnd)
+                _en_one(self.kutu_hwnd, altina=self.hwnd)
+        finally:
+            self.p.after(USTTE_TUT_MS, self._ustte_tut)
 
     def goster(self, acik: bool):
         self.acik = acik
